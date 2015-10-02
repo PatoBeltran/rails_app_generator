@@ -1,10 +1,9 @@
-GENERATOR_TEMPLATE_PATH = "~/.icalialabs_rails_generator_template"
-remove_file "README.rdoc"
+GENERATOR_TEMPLATE_PATH = "~/.rails_generator_template"
 create_file "README.md", @app_name.capitalize
 
 #Especify ruby version to be at least version 2.0.0
 inject_into_file "Gemfile", after: "source 'https://rubygems.org'\n\n" do <<-'RUBY'
-ruby '2.1.2'
+ruby "2.2.3"
 RUBY
 end
 
@@ -16,14 +15,14 @@ gem_group :test do
   gem "database_cleaner"
   gem "email_spec"
   gem "shoulda-matchers"
-  gem 'selenium-webdriver'
+  gem "selenium-webdriver"
 end
 
 gem_group :development, :test do
   gem "rspec-rails"
-  gem 'debugger2', :git => "git://github.com/ko1/debugger2.git"
+  gem "byebug"
   gem "factory_girl_rails"
-  gem 'ffaker'
+  gem "ffaker"
 end
 
 gem_group :production do
@@ -50,8 +49,7 @@ end
 run 'bundle install --quiet'
 
 #Generates figaro configuration
-generate "figaro:install"
-#TODO: add application_example.yml
+run 'bundle exec figaro install'
 
 #Generates unicorn configuration
 create_file "Procfile", "web: bundle exec unicorn -p $PORT -c ./config/unicorn.rb"
@@ -90,7 +88,6 @@ end
 #Prepare for heroku staging env 
 run "cp config/environments/production.rb config/environments/staging.rb"
 
-
 #Git configuration
 git :init
 append_file ".gitignore", "/config/database.yml\n"
@@ -111,6 +108,3 @@ if yes? "Do you want me to add the remote?"
   remote = ask("What is the remote git URL?")
   run "git remote add origin #{remote}"
 end
-
-readme "#{GENERATOR_TEMPLATE_PATH}/README"
-
